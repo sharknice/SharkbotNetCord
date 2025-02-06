@@ -11,6 +11,9 @@ Console.WriteLine("starting SharkbotNetCord");
 
 var builder = Host.CreateApplicationBuilder(args);
 
+var httpClient = new HttpClient();
+httpClient.Timeout = TimeSpan.FromSeconds(240);
+
 builder.Services.AddDiscordGateway(options =>
 {
     options.Intents = GatewayIntents.GuildMessages
@@ -21,7 +24,7 @@ builder.Services.AddDiscordGateway(options =>
                   | GatewayIntents.Guilds;
 }).
 AddGatewayEventHandlers(typeof(Program).Assembly).
-AddHttpClient().
+AddSingleton(httpClient).
 AddSingleton<BotConfiguration>().
 AddSingleton<ApiUtilityService>().
 AddSingleton<ChatUpdateService>().
