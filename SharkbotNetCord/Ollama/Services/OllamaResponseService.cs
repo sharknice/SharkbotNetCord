@@ -86,7 +86,7 @@ namespace SharkbotNetCord.Ollama.Services
             var ollamaJsonResponse = await ollamaResponse.Content.ReadAsStringAsync();
             var ollamaChatResponse = JsonConvert.DeserializeObject<OllamaChatResponse>(ollamaJsonResponse);
 
-            var responseMessage = RemoveThinkTags(ollamaChatResponse.Message.Content);
+            var responseMessage = FormatMessage(ollamaChatResponse.Message.Content);
 
             if (message.Channel != null)
             {
@@ -106,6 +106,17 @@ namespace SharkbotNetCord.Ollama.Services
             await Task.Delay(typeTime).ContinueWith((task) => { message.SendAsync(formattedChat); });
 
             FinishProcessing(conversation.name);
+        }
+
+        string FormatMessage(string input)
+        {
+            var result = RemoveThinkTags(input);
+
+            if (result.Length >= 2 && result[0] == '"' && result[result.Length - 1] == '"')
+            {
+                result = result.Substring(1, result.Length - 2);
+            }
+            return result;
         }
 
         string RemoveThinkTags(string input)
